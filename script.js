@@ -68,15 +68,18 @@ function updateHeaderAndWelcomeVisibility() {
     
     if (videoGrid.children.length === 0) {
         // No videos - show header and welcome message
-        header.classList.remove('hidden');
+        header.classList.remove('hidden', 'has-videos');
+        header.classList.add('visible');
         welcome.style.display = 'block';
         setTimeout(() => {
             welcome.classList.remove('hidden');
         }, 10);
     } else {
-        // Has videos - hide welcome message immediately
+        // Has videos - hide welcome message and show pull handle
         welcome.classList.add('hidden');
         welcome.style.display = 'none';
+        header.classList.add('has-videos');
+        header.classList.remove('visible'); // Hide by default when videos exist
     }
 }
 
@@ -301,6 +304,7 @@ function addVideoById(videoId) {
 
                     // Update visibility after adding video
                     updateHeaderAndWelcomeVisibility();
+                    updateClearAllButton();
                 },
                 'onStateChange': function(event) {
                     if (event.data === YT.PlayerState.PLAYING) {
@@ -382,3 +386,164 @@ function searchSuggestion(chipElement) {
     document.getElementById('smartInput').value = searchTerm;
     handleSmartInput();
 }
+
+function clearAllVideos() {
+    const videoGrid = document.getElementById('videoGrid');
+    // Remove all videos
+    while (videoGrid.firstChild) {
+        const playerId = videoGrid.firstChild.querySelector('.video-container').id;
+        removeVideo(videoGrid.firstChild, playerId);
+    }
+    // Hide clear all button
+    document.getElementById('clearAllBtn').style.display = 'none';
+}
+
+// Show/hide clear all button based on videos present
+function updateClearAllButton() {
+    const videoGrid = document.getElementById('videoGrid');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    clearAllBtn.style.display = videoGrid.children.length > 0 ? 'block' : 'none';
+}
+
+// Mobile bottom bar visibility
+let lastScrollY = window.scrollY;
+let touchStartY = 0;
+
+// Handle scroll for bottom bar visibility
+document.addEventListener('scroll', () => {
+    if (window.innerWidth <= 768) {
+        const header = document.querySelector('.header-content');
+        const videoGrid = document.getElementById('videoGrid');
+        const currentScrollY = window.scrollY;
+        
+        // Only hide/show based on scroll if there are videos
+        if (videoGrid.children.length > 0) {
+            if (currentScrollY > lastScrollY) {
+                // Scrolling down - hide
+                header.classList.remove('visible');
+            } else {
+                // Scrolling up - show
+                header.classList.add('visible');
+            }
+            lastScrollY = currentScrollY;
+        }
+    }
+});
+
+// Handle touch events for bottom bar
+document.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+});
+
+document.addEventListener('touchmove', (e) => {
+    if (window.innerWidth <= 768) {
+        const touchY = e.touches[0].clientY;
+        const header = document.querySelector('.header-content');
+        const videoGrid = document.getElementById('videoGrid');
+        
+        // Only handle touch events if there are videos
+        if (videoGrid.children.length > 0) {
+            if (touchStartY < touchY) {
+                // Swiping down - show
+                header.classList.add('visible');
+            } else if (touchStartY > touchY) {
+                // Swiping up - hide
+                header.classList.remove('visible');
+            }
+        }
+    }
+});
+
+// Add these functions for menu handling
+function toggleMenu() {
+    const menu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('menuOverlay');
+    const isOpen = menu.classList.contains('open');
+
+    if (isOpen) {
+        menu.classList.remove('open');
+        overlay.classList.remove('open');
+    } else {
+        menu.classList.add('open');
+        overlay.classList.add('open');
+    }
+}
+
+// Add click handler to menu toggle button
+document.getElementById('menuToggle').addEventListener('click', toggleMenu);
+
+// Add swipe detection for menu
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+});
+
+document.addEventListener('touchmove', (e) => {
+    if (!touchStartX) return;
+
+    const touchX = e.touches[0].clientX;
+    const menu = document.getElementById('sideMenu');
+    const isOpen = menu.classList.contains('open');
+
+    // Swipe from right edge to open
+    if (!isOpen && touchStartX > window.innerWidth - 30 && touchX < touchStartX) {
+        toggleMenu();
+    }
+    // Swipe to close
+    else if (isOpen && touchX > touchStartX + 50) {
+        toggleMenu();
+    }
+});
+
+document.addEventListener('touchend', () => {
+    touchStartX = 0;
+});
+
+// Add pull handle interaction
+document.addEventListener('DOMContentLoaded', () => {
+    const header = document.querySelector('.header-content');
+    
+    // Add pull handle click handler
+    const pullHandle = document.createElement('div');
+    pullHandle.className = 'mobile-pull-handle';
+    pullHandle.innerHTML = '<span class="pull-icon">🔍</span>';
+    pullHandle.addEventListener('click', () => {
+        header.classList.toggle('visible');
+    });
+    
+    header.insertBefore(pullHandle, header.firstChild);
+
+    // Handle touch events for the search bar
+    let touchStartY = 0;
+    let isDragging = false;
+
+    header.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+        isDragging = true;
+    });
+
+    header.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        const touchY = e.touches[0].clientY;
+        const diff = touchStartY - touchY;
+        
+        if (Math.abs(diff) > 30) { // Add some threshold
+            if (diff > 0) {
+                // Swipe up - show search bar
+                header.classList.add('visible');
+            } else {
+                // Swipe down - hide search bar
+                header.classList.remove('visible');
+            }
+            isDragging = false;
+        }
+    });
+
+    header.addEventListener('touchend', () => {
+        isDragging = false;
+    });
+});
+
+// Remove or modify the existing scroll handler since we're using the pull handle now
+document.removeEventListener('scroll', scrollHandler);

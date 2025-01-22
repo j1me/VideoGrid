@@ -9,6 +9,8 @@ A web application that allows users to play multiple YouTube videos simultaneous
 - Individual controls for each video (play/pause, mute/unmute)
 - Auto-muted playback by default
 - Only one video can have audio playing at a time
+- Slide-out menu with options like Clear All
+- Mobile-friendly with swipe gestures
 
 ## Setup Instructions
 

@@ -325,18 +325,72 @@ button:hover {
 }
 
 @media (max-width: 768px) {
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .container {
+        padding: 0;
+    }
+
     .header-content {
         position: fixed;
         bottom: 0;
         top: auto;
-        transform: translateY(0);
+        transform: translateY(100%); /* Hidden by default when videos exist */
         padding: 10px;
         border-top: 1px solid #233554;
         background: #0a192f;
+        transition: transform 0.3s ease;
     }
 
-    .header-content.hidden {
-        transform: translateY(100%);
+    .mobile-pull-handle {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0a192f;
+        border: 1px solid #233554;
+        border-bottom: none;
+        border-radius: 12px 12px 0 0;
+        padding: 8px 20px;
+        cursor: pointer;
+    }
+
+    .pull-icon {
+        font-size: 20px;
+        color: #64ffda;
+    }
+
+    /* Show pull handle only when videos exist */
+    .header-content.has-videos .mobile-pull-handle {
+        display: block;
+    }
+
+    .header-content.visible {
+        transform: translateY(0);
+    }
+
+    /* Adjust welcome message padding when no videos */
+    .welcome-message {
+        padding-bottom: 90px;
+    }
+
+    .video-grid {
+        padding-top: 0;
+        margin-top: 0;
+        padding-bottom: 80px;
+    }
+
+    .welcome-message ul {
+        padding: 0 20px;
+    }
+
+    .welcome-message li {
+        font-size: 16px;
+        margin: 12px 0;
     }
 
     .header-content h1 {
@@ -357,15 +411,6 @@ button:hover {
         width: 100%;
         justify-content: center;
         padding: 15px;
-    }
-
-    .video-grid {
-        padding-bottom: 180px;
-    }
-
-    .welcome-message {
-        margin: 0 auto 20px;
-        padding: 20px;
     }
 
     .error-message {
@@ -393,10 +438,160 @@ button:hover {
         padding: 8px 12px;
         font-size: 13px;
     }
+
+    .clear-all-btn {
+        top: auto;
+        bottom: 90px;
+        right: 10px;
+        font-size: 12px;
+        padding: 6px 12px;
+    }
 }
 
 @keyframes gradientShift {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+/* Add new styles for clear all button */
+.clear-all-btn {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    z-index: 1001;
+    background: rgba(255, 68, 68, 0.9);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: none; /* Hidden by default */
+}
+
+.clear-all-btn:hover {
+    background: rgba(255, 68, 68, 1);
+}
+
+/* Update Menu Toggle Button */
+.menu-toggle {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+    background: #112240;
+    border: 1px solid #64ffda;
+    border-right: none;
+    color: #64ffda;
+    width: 40px;
+    height: 40px;
+    border-radius: 4px 0 0 4px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.menu-toggle:hover {
+    background: #1a2f55;
+    width: 45px;
+}
+
+/* Update mobile styles for menu toggle */
+@media (max-width: 768px) {
+    .menu-toggle {
+        top: auto;
+        bottom: 50%;
+        transform: translateY(50%);
+        right: 0;
+    }
+}
+
+/* Side Menu */
+.side-menu {
+    position: fixed;
+    right: -300px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: #112240;
+    z-index: 1002;
+    transition: right 0.3s ease;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.side-menu.open {
+    right: 0;
+}
+
+.menu-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #233554;
+}
+
+.menu-header h3 {
+    color: #64ffda;
+    margin: 0;
+}
+
+.close-menu {
+    background: none;
+    border: none;
+    color: #8892b0;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.menu-content {
+    padding: 20px;
+}
+
+.menu-button {
+    width: 100%;
+    padding: 12px;
+    margin: 5px 0;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid #ff4444;
+    color: #ff4444;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.menu-button:hover {
+    background: rgba(255, 68, 68, 0.2);
+}
+
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.menu-overlay.open {
+    display: block;
+    opacity: 1;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .side-menu {
+        width: 280px;
+    }
 }

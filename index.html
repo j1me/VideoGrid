@@ -9,11 +9,14 @@
 <body>
     <div class="container">
         <div class="header-content">
+            <div class="mobile-pull-handle">
+                <span class="pull-icon">��</span>
+            </div>
             <h1>VideoGrid</h1>
             <div class="input-sections">
                 <div class="input-section">
                     <div class="input-group">
-                        <input type="text" id="smartInput" placeholder="🔍 Enter URL or describe what you'd like to watch">
+                        <input type="text" id="smartInput" placeholder="Search Videos Or Enter URL">
                         <button onclick="handleSmartInput()">🔍 Find & Play</button>
                     </div>
                 </div>
@@ -47,6 +50,28 @@
         <div id="videoGrid" class="video-grid"></div>
         <div id="error-message" class="error-message"></div>
     </div>
+
+    <!-- Add menu toggle button -->
+    <button id="menuToggle" class="menu-toggle">
+        ⚙️
+    </button>
+
+    <!-- Add slide-out menu -->
+    <div id="sideMenu" class="side-menu">
+        <div class="menu-header">
+            <h3>Options</h3>
+            <button class="close-menu" onclick="toggleMenu()">✕</button>
+        </div>
+        <div class="menu-content">
+            <button onclick="clearAllVideos()" class="menu-button">
+                <span>🗑️ Clear All Videos</span>
+            </button>
+            <!-- Add more menu items here if needed -->
+        </div>
+    </div>
+
+    <!-- Add overlay for menu -->
+    <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
 
     <!-- Load YouTube API -->
     <script src="https://www.youtube.com/player_api"></script>
