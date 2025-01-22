@@ -356,7 +356,6 @@ button:hover {
         transform: translateY(0);
     }
 
-    /* New floating search button */
     .mobile-search-button {
         position: fixed;
         bottom: 20px;
@@ -374,10 +373,6 @@ button:hover {
         cursor: pointer;
         z-index: 1000;
         border: none;
-    }
-
-    .mobile-search-button:active {
-        transform: scale(0.95);
     }
 
     .video-grid {

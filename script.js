@@ -501,7 +501,7 @@ document.addEventListener('touchend', () => {
     touchStartX = 0;
 });
 
-// Add floating search button and scroll handling for mobile
+// Add floating search button for mobile
 document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth <= 768) {
         // Create floating search button
@@ -513,45 +513,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const header = document.querySelector('.header-content');
         const videoGrid = document.getElementById('videoGrid');
 
-        // Handle search button click
-        searchButton.onclick = (e) => {
-            e.stopPropagation(); // Prevent event bubbling
-            if (videoGrid.children.length > 0) {
-                header.classList.add('visible');
-                searchButton.style.display = 'none';
-            }
+        // Simple toggle for search bar
+        searchButton.onclick = () => {
+            header.classList.toggle('visible');
         };
-
-        // Handle scroll events with debounce
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            if (scrollTimeout) {
-                clearTimeout(scrollTimeout);
-            }
-            
-            scrollTimeout = setTimeout(() => {
-                if (videoGrid.children.length > 0) {
-                    header.classList.remove('visible');
-                    searchButton.style.display = 'flex';
-                }
-            }, 150); // Debounce time
-        });
-
-        // Handle search bar close on background click
-        header.addEventListener('click', (e) => {
-            if (e.target === header && videoGrid.children.length > 0) {
-                header.classList.remove('visible');
-                searchButton.style.display = 'flex';
-            }
-        });
 
         // Initial state
         if (videoGrid.children.length === 0) {
-            searchButton.style.display = 'none';
             header.classList.add('visible');
-        } else {
-            searchButton.style.display = 'flex';
-            header.classList.remove('visible');
+            searchButton.style.display = 'none';
         }
     }
 });
