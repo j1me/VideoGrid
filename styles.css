@@ -334,48 +334,50 @@ button:hover {
         padding: 0;
     }
 
+    .welcome-message {
+        margin: 0;
+        padding: 20px;
+        border-radius: 0;
+        max-width: 100%;
+    }
+
     .header-content {
         position: fixed;
         bottom: 0;
         top: auto;
-        transform: translateY(100%); /* Hidden by default when videos exist */
+        transform: translateY(100%);
         padding: 10px;
         border-top: 1px solid #233554;
         background: #0a192f;
         transition: transform 0.3s ease;
     }
 
-    .mobile-pull-handle {
-        display: none; /* Hidden by default */
-        position: absolute;
-        top: -40px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #0a192f;
-        border: 1px solid #233554;
-        border-bottom: none;
-        border-radius: 12px 12px 0 0;
-        padding: 8px 20px;
-        cursor: pointer;
-    }
-
-    .pull-icon {
-        font-size: 20px;
-        color: #64ffda;
-    }
-
-    /* Show pull handle only when videos exist */
-    .header-content.has-videos .mobile-pull-handle {
-        display: block;
-    }
-
     .header-content.visible {
         transform: translateY(0);
     }
 
-    /* Adjust welcome message padding when no videos */
-    .welcome-message {
-        padding-bottom: 90px;
+    /* New floating search button */
+    .mobile-search-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        border-radius: 25px;
+        background: #64ffda;
+        color: #0a192f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        z-index: 1000;
+        border: none;
+    }
+
+    .mobile-search-button:active {
+        transform: scale(0.95);
     }
 
     .video-grid {

@@ -65,21 +65,23 @@ function updateHeaderAndWelcomeVisibility() {
     const header = document.querySelector('.header-content');
     const welcome = document.getElementById('welcome-message');
     const videoGrid = document.getElementById('videoGrid');
+    const searchButton = document.querySelector('.mobile-search-button');
     
     if (videoGrid.children.length === 0) {
         // No videos - show header and welcome message
-        header.classList.remove('hidden', 'has-videos');
+        header.classList.remove('hidden');
         header.classList.add('visible');
         welcome.style.display = 'block';
+        if (searchButton) searchButton.style.display = 'none';
         setTimeout(() => {
             welcome.classList.remove('hidden');
         }, 10);
     } else {
-        // Has videos - hide welcome message and show pull handle
+        // Has videos - hide welcome message
         welcome.classList.add('hidden');
         welcome.style.display = 'none';
-        header.classList.add('has-videos');
-        // Don't automatically remove visible class here
+        header.classList.remove('visible');
+        if (searchButton) searchButton.style.display = 'flex';
     }
 }
 
@@ -499,51 +501,22 @@ document.addEventListener('touchend', () => {
     touchStartX = 0;
 });
 
-// Add pull handle interaction
+// Add floating search button for mobile
 document.addEventListener('DOMContentLoaded', () => {
-    const header = document.querySelector('.header-content');
-    
-    // Add pull handle click handler
-    const pullHandle = document.createElement('div');
-    pullHandle.className = 'mobile-pull-handle';
-    pullHandle.innerHTML = '<span class="pull-icon">🔍</span>';
-    pullHandle.addEventListener('click', () => {
-        header.classList.toggle('visible');
-    });
-    
-    header.insertBefore(pullHandle, header.firstChild);
-
-    // Handle touch events for the search bar
-    let touchStartY = 0;
-    let isDragging = false;
-
-    header.addEventListener('touchstart', (e) => {
-        touchStartY = e.touches[0].clientY;
-        isDragging = true;
-    });
-
-    header.addEventListener('touchmove', (e) => {
-        if (!isDragging) return;
+    if (window.innerWidth <= 768) {
+        const searchButton = document.createElement('button');
+        searchButton.className = 'mobile-search-button';
+        searchButton.innerHTML = '🔍';
+        searchButton.addEventListener('click', () => {
+            const header = document.querySelector('.header-content');
+            header.classList.toggle('visible');
+        });
+        document.body.appendChild(searchButton);
         
-        const touchY = e.touches[0].clientY;
-        const diff = touchStartY - touchY;
-        
-        if (Math.abs(diff) > 30) { // Add some threshold
-            if (diff > 0) {
-                // Swipe up - show search bar
-                header.classList.add('visible');
-            } else {
-                // Swipe down - hide search bar
-                header.classList.remove('visible');
-            }
-            isDragging = false;
+        // Initially hide the button if no videos
+        const videoGrid = document.getElementById('videoGrid');
+        if (videoGrid.children.length === 0) {
+            searchButton.style.display = 'none';
         }
-    });
-
-    header.addEventListener('touchend', () => {
-        isDragging = false;
-    });
+    }
 });
-
-// Remove or modify the existing scroll handler since we're using the pull handle now
-document.removeEventListener('scroll', scrollHandler);
