@@ -80,50 +80,124 @@ function updateHeaderAndWelcomeVisibility() {
     }
 }
 
-async function searchVideos() {
+// Add this function near the top with other utility functions
+function isYouTubeUrl(input) {
+    const patterns = [
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/i,
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^/?]+)/i,
+        /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^/?]+)/i,
+        /(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^/?]+)/i
+    ];
+
+    return patterns.some(pattern => pattern.test(input));
+}
+
+// Add this new function to handle the smart input
+async function handleSmartInput() {
     if (!isYouTubeAPIReady) {
         showError('Please wait for YouTube player to initialize...');
         return;
     }
 
-    const searchQuery = document.getElementById('searchQuery').value.trim();
-    if (!searchQuery) {
-        showError('Please enter a search term');
+    const input = document.getElementById('smartInput').value.trim();
+    if (!input) {
+        showError('Please enter a YouTube URL or search term');
         return;
     }
 
-    try {
-        showError('Searching videos...');
-        const response = await fetch(
-            `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&key=${API_KEY}&type=video&maxResults=9&videoEmbeddable=true`
-        );
-        
-        if (!response.ok) {
-            throw new Error('Search request failed');
-        }
+    // Clear input field
+    document.getElementById('smartInput').value = '';
 
-        const data = await response.json();
-        const videos = data.items;
-
-        if (!videos || videos.length === 0) {
-            showError('No videos found for your search');
+    if (isYouTubeUrl(input)) {
+        // Handle as URL
+        const videoId = extractVideoId(input);
+        if (!videoId) {
+            showError('Invalid YouTube URL. Please check the URL and try again.');
             return;
         }
+        addVideoById(videoId);
+    } else {
+        // Handle as search term
+        try {
+            showError('Searching videos...');
+            // Request more videos than needed to account for restricted ones
+            const response = await fetch(
+                `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(input)}&key=${API_KEY}&type=video&maxResults=15&videoEmbeddable=true`
+            );
+            
+            if (!response.ok) {
+                throw new Error('Search request failed');
+            }
 
-        // Clear search input
-        document.getElementById('searchQuery').value = '';
+            const data = await response.json();
+            const videos = data.items;
 
-        // Add all videos to the grid
-        videos.forEach(video => {
-            const videoId = video.id.videoId;
-            addVideoById(videoId);
-        });
+            if (!videos || videos.length === 0) {
+                showError('No videos found for your search');
+                return;
+            }
 
-    } catch (error) {
-        console.error('Error searching videos:', error);
-        showError('Error searching YouTube videos. Please try again.');
+            // Track how many videos we've successfully added
+            let addedVideos = 0;
+            const targetVideos = 9; // Number of videos we want to display
+
+            // Try to add each video, with error handling
+            for (const video of videos) {
+                if (addedVideos >= targetVideos) break;
+
+                const videoId = video.id.videoId;
+                try {
+                    await checkVideoAvailability(videoId);
+                    addVideoById(videoId);
+                    addedVideos++;
+                } catch (error) {
+                    console.log(`Skipping restricted video ${videoId}`);
+                    continue;
+                }
+            }
+
+            if (addedVideos === 0) {
+                showError('No playable videos found for your search. Try different terms.');
+            }
+
+        } catch (error) {
+            console.error('Error searching videos:', error);
+            showError('Error searching YouTube videos. Please try again.');
+        }
     }
 }
+
+// Add this new function to check video availability
+function checkVideoAvailability(videoId) {
+    return new Promise((resolve, reject) => {
+        fetch(`https://www.googleapis.com/youtube/v3/videos?part=status&id=${videoId}&key=${API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.items && data.items[0]) {
+                    const status = data.items[0].status;
+                    if (status.embeddable && !status.privacyStatus !== 'private') {
+                        resolve();
+                    } else {
+                        reject('Video not embeddable or private');
+                    }
+                } else {
+                    reject('Video not found');
+                }
+            })
+            .catch(error => reject(error));
+    });
+}
+
+// Add keyboard event listener for the smart input
+document.addEventListener('DOMContentLoaded', () => {
+    const smartInput = document.getElementById('smartInput');
+    smartInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSmartInput();
+        }
+    });
+});
 
 function removeVideo(wrapper, playerId) {
     // Find and remove the player
@@ -252,29 +326,6 @@ function addVideoById(videoId) {
     }
 }
 
-// Modify the existing addVideo function to use addVideoById
-function addVideo() {
-    if (!isYouTubeAPIReady) {
-        showError('YouTube API is not ready yet. Please try again in a moment.');
-        return;
-    }
-
-    const videoUrl = document.getElementById('videoUrl').value.trim();
-    if (!videoUrl) {
-        showError('Please enter a YouTube URL');
-        return;
-    }
-
-    const videoId = extractVideoId(videoUrl);
-    if (!videoId) {
-        showError('Invalid YouTube URL. Please check the URL and try again.');
-        return;
-    }
-
-    document.getElementById('videoUrl').value = '';
-    addVideoById(videoId);
-}
-
 function extractVideoId(url) {
     const patterns = [
         /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/i,
@@ -318,3 +369,16 @@ document.addEventListener('DOMContentLoaded', updateHeaderAndWelcomeVisibility);
 document.addEventListener('DOMContentLoaded', () => {
     updateHeaderAndWelcomeVisibility();
 });
+
+function searchSuggestion(chipElement) {
+    const text = chipElement.textContent.split(' ');
+    let searchTerm = text[text.length - 1]; // Get last word after emoji
+    
+    // Add 'live' for news searches
+    if (searchTerm.includes('News')) {
+        searchTerm = 'live ' + searchTerm;
+    }
+    
+    document.getElementById('smartInput').value = searchTerm;
+    handleSmartInput();
+}

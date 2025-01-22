@@ -5,6 +5,7 @@ A web application that allows users to play multiple YouTube videos simultaneous
 ## Key Features
 
 - Multiple video playback in a responsive grid
+- Smart input that automatically detects YouTube links or search terms
 - Individual controls for each video (play/pause, mute/unmute)
 - Auto-muted playback by default
 - Only one video can have audio playing at a time
@@ -17,6 +18,16 @@ A web application that allows users to play multiple YouTube videos simultaneous
    - `script.js`
    - `styles.css`
 3. Open `index.html` in a modern web browser
+
+## Usage
+
+Enter either:
+- A YouTube URL (e.g., https://www.youtube.com/watch?v=VIDEO_ID)
+- A search term (e.g., "cute cats")
+
+The system will automatically:
+- Add the video directly if a valid YouTube URL is detected
+- Show search results if a search term is entered
 
 ## Important Implementation Details
 
@@ -93,6 +104,11 @@ function onYouTubePlayerAPIReady() {
 1. Videos should start muted by default
 2. Only one video should have audio playing at a time
 3. Check mute/unmute toggle functionality
+
+### Input Processing Issues
+1. Check if URL validation is working correctly
+2. Verify search functionality is properly connected to YouTube Data API
+3. Ensure proper error handling for invalid inputs
 
 ### Browser Support
 - Tested on modern browsers (Chrome, Firefox, Safari)
