@@ -77,11 +77,18 @@ function updateHeaderAndWelcomeVisibility() {
             welcome.classList.remove('hidden');
         }, 10);
     } else {
-        // Has videos - hide welcome message
+        // Has videos - hide welcome message and manage search visibility
         welcome.classList.add('hidden');
         welcome.style.display = 'none';
-        header.classList.remove('visible');
-        if (searchButton) searchButton.style.display = 'flex';
+        
+        // Show search button only when search bar is hidden
+        if (searchButton) {
+            if (header.classList.contains('visible')) {
+                searchButton.style.display = 'none';
+            } else {
+                searchButton.style.display = 'flex';
+            }
+        }
     }
 }
 
@@ -509,9 +516,19 @@ document.addEventListener('DOMContentLoaded', () => {
         searchButton.innerHTML = '🔍';
         searchButton.addEventListener('click', () => {
             const header = document.querySelector('.header-content');
-            header.classList.toggle('visible');
+            header.classList.add('visible');
+            searchButton.style.display = 'none'; // Hide button when search bar is visible
         });
         document.body.appendChild(searchButton);
+        
+        // Handle search bar hiding
+        const header = document.querySelector('.header-content');
+        header.addEventListener('click', (e) => {
+            if (e.target === header) {
+                header.classList.remove('visible');
+                searchButton.style.display = 'flex';
+            }
+        });
         
         // Initially hide the button if no videos
         const videoGrid = document.getElementById('videoGrid');
