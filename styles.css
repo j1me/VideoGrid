@@ -350,6 +350,8 @@ button:hover {
         border-top: 1px solid #233554;
         background: #0a192f;
         transition: transform 0.3s ease;
+        z-index: 1001;
+        width: 100%;
     }
 
     .header-content.visible {
@@ -376,9 +378,7 @@ button:hover {
     }
 
     .video-grid {
-        padding-top: 0;
-        margin-top: 0;
-        padding-bottom: 80px;
+        padding-bottom: 100px;
     }
 
     .welcome-message ul {

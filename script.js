@@ -516,6 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Simple toggle for search bar
         searchButton.onclick = () => {
             header.classList.toggle('visible');
+            // Keep button visible
+            searchButton.style.display = 'flex';
         };
 
         // Initial state
