@@ -504,38 +504,38 @@ document.addEventListener('touchend', () => {
 // Add floating search button and scroll handling for mobile
 document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth <= 768) {
+        // Create floating search button
         const searchButton = document.createElement('button');
         searchButton.className = 'mobile-search-button';
         searchButton.innerHTML = '🔍';
-        
-        // Handle search button click
-        searchButton.addEventListener('click', () => {
-            const header = document.querySelector('.header-content');
-            header.classList.add('visible');
-            searchButton.style.display = 'none';
-        });
-        
         document.body.appendChild(searchButton);
 
-        // Handle scroll events
-        document.addEventListener('scroll', () => {
-            const header = document.querySelector('.header-content');
-            const videoGrid = document.getElementById('videoGrid');
-            
+        const header = document.querySelector('.header-content');
+        const videoGrid = document.getElementById('videoGrid');
+
+        // Handle search button click
+        searchButton.addEventListener('click', () => {
             if (videoGrid.children.length > 0) {
-                if (header.classList.contains('visible')) {
-                    header.classList.remove('visible');
-                    searchButton.style.display = 'flex';
-                }
+                header.classList.add('visible');
+                searchButton.style.display = 'none';
             }
         });
 
-        // Initially hide the button if no videos
-        const videoGrid = document.getElementById('videoGrid');
+        // Handle scroll events
+        document.addEventListener('scroll', () => {
+            if (videoGrid.children.length > 0) {
+                header.classList.remove('visible');
+                searchButton.style.display = 'flex';
+            }
+        });
+
+        // Initial state
         if (videoGrid.children.length === 0) {
             searchButton.style.display = 'none';
+            header.classList.add('visible');
         } else {
             searchButton.style.display = 'flex';
+            header.classList.remove('visible');
         }
     }
 });
