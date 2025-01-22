@@ -79,7 +79,7 @@ function updateHeaderAndWelcomeVisibility() {
         welcome.classList.add('hidden');
         welcome.style.display = 'none';
         header.classList.add('has-videos');
-        header.classList.remove('visible'); // Hide by default when videos exist
+        // Don't automatically remove visible class here
     }
 }
 
