@@ -77,18 +77,11 @@ function updateHeaderAndWelcomeVisibility() {
             welcome.classList.remove('hidden');
         }, 10);
     } else {
-        // Has videos - hide welcome message and manage search visibility
+        // Has videos - hide welcome message
         welcome.classList.add('hidden');
         welcome.style.display = 'none';
-        
-        // Show search button only when search bar is hidden
-        if (searchButton) {
-            if (header.classList.contains('visible')) {
-                searchButton.style.display = 'none';
-            } else {
-                searchButton.style.display = 'flex';
-            }
-        }
+        header.classList.remove('visible');
+        if (searchButton) searchButton.style.display = 'flex';
     }
 }
 
@@ -508,32 +501,41 @@ document.addEventListener('touchend', () => {
     touchStartX = 0;
 });
 
-// Add floating search button for mobile
+// Add floating search button and scroll handling for mobile
 document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth <= 768) {
         const searchButton = document.createElement('button');
         searchButton.className = 'mobile-search-button';
         searchButton.innerHTML = '🔍';
+        
+        // Handle search button click
         searchButton.addEventListener('click', () => {
             const header = document.querySelector('.header-content');
             header.classList.add('visible');
-            searchButton.style.display = 'none'; // Hide button when search bar is visible
+            searchButton.style.display = 'none';
         });
-        document.body.appendChild(searchButton);
         
-        // Handle search bar hiding
-        const header = document.querySelector('.header-content');
-        header.addEventListener('click', (e) => {
-            if (e.target === header) {
-                header.classList.remove('visible');
-                searchButton.style.display = 'flex';
+        document.body.appendChild(searchButton);
+
+        // Handle scroll events
+        document.addEventListener('scroll', () => {
+            const header = document.querySelector('.header-content');
+            const videoGrid = document.getElementById('videoGrid');
+            
+            if (videoGrid.children.length > 0) {
+                if (header.classList.contains('visible')) {
+                    header.classList.remove('visible');
+                    searchButton.style.display = 'flex';
+                }
             }
         });
-        
+
         // Initially hide the button if no videos
         const videoGrid = document.getElementById('videoGrid');
         if (videoGrid.children.length === 0) {
             searchButton.style.display = 'none';
+        } else {
+            searchButton.style.display = 'flex';
         }
     }
 });
