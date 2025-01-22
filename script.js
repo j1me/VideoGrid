@@ -514,16 +514,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const videoGrid = document.getElementById('videoGrid');
 
         // Handle search button click
-        searchButton.addEventListener('click', () => {
+        searchButton.onclick = (e) => {
+            e.stopPropagation(); // Prevent event bubbling
             if (videoGrid.children.length > 0) {
                 header.classList.add('visible');
                 searchButton.style.display = 'none';
             }
+        };
+
+        // Handle scroll events with debounce
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            if (scrollTimeout) {
+                clearTimeout(scrollTimeout);
+            }
+            
+            scrollTimeout = setTimeout(() => {
+                if (videoGrid.children.length > 0) {
+                    header.classList.remove('visible');
+                    searchButton.style.display = 'flex';
+                }
+            }, 150); // Debounce time
         });
 
-        // Handle scroll events
-        document.addEventListener('scroll', () => {
-            if (videoGrid.children.length > 0) {
+        // Handle search bar close on background click
+        header.addEventListener('click', (e) => {
+            if (e.target === header && videoGrid.children.length > 0) {
                 header.classList.remove('visible');
                 searchButton.style.display = 'flex';
             }
