@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoGrid</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-content">
+            <h1>VideoGrid</h1>
+            <div class="input-sections">
+                <div class="input-section">
+                    <input type="text" id="videoUrl" placeholder="Enter YouTube Video URL">
+                    <button onclick="addVideo()">Add Video</button>
+                </div>
+                <div class="separator">OR</div>
+                <div class="input-section">
+                    <input type="text" id="searchQuery" placeholder="Search YouTube videos">
+                    <button onclick="searchVideos()">Search & Add</button>
+                </div>
+            </div>
+        </div>
+        <div id="welcome-message" class="welcome-message">
+            <div class="welcome-content">
+                <h2>Welcome to VideoGrid!</h2>
+                <p>Watch multiple YouTube videos simultaneously in a responsive grid layout.</p>
+                <ul>
+                    <li>📌 Paste any YouTube URL to add individual videos</li>
+                    <li>🔍 Or search and add multiple videos at once</li>
+                    <li>🔊 Control audio individually for each video</li>
+                    <li>🎥 Videos automatically arrange in a responsive grid</li>
+                    <li>💡 Hover over videos to show controls</li>
+                    <li>🔄 Drag videos to rearrange them in the grid</li>
+                </ul>
+                <p class="start-hint">Start by adding your first video above!</p>
+            </div>
+        </div>
+        <div id="videoGrid" class="video-grid"></div>
+        <div id="error-message" class="error-message"></div>
+    </div>
+
+    <!-- Load YouTube API -->
+    <script src="https://www.youtube.com/player_api"></script>
+    <script src="script.js"></script>
+</body>
+</html>
